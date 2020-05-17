@@ -3,46 +3,26 @@ import React, { useState, useEffect } from 'react';
 // exporting in function form
 export default function App() {
 
-// setting the State using Hooks useState
-  const [repositories, setRepositories] = useState([]);
-
-
-// Using Hooks useEffect to define state conditions
-  useEffect( async () => {
-    const response = await fetch('https://api.github.com/users/BernardomAmaral/repos');
-    const data = await response.json();
-      setRepositories(data)
-  },[]);
-//Implementing a visual return to the favorites lenght
+  const [location, setLocation] = useState({});
+// using Geolocation Chrome Tools, like a eventListener
   useEffect(() => {
-    const filterFavorites = repositories.filter(repo => repo.favorite);
+    navigator.geolocation.watchPosition(handleWatchPosition)
+  }, [])
 
-    document.title = `Você tem ${filterFavorites.length} favoritos`
-  }, [repositories])
-
-
-//Favorite function
-  function handleFavorite(id){
-    const newRepositories = repositories.map( repo => {
-      return repo.id === id ? {...repo, favorite: !repo.favorite } : repo
-    });
-
-    setRepositories(newRepositories);
+  function handleWatchPosition({coords}) {
+    const { latitude, longitude, accuracy } = coords;
+    setLocation({latitude,longitude, accuracy})
   }
+// basically create a state for him to hear the location
 
   return ( 
-     
-     <ul>
-       { repositories.map( repo => (
-          <li key={repo.id}>
-            {repo.name}
-            {repo.favorite && <span>(Favorito)</span> }
-            <button onClick={ () => handleFavorite(repo.id) }>
-              Favoritar
-            </button>
-          </li>
-          ))}
-     </ul>
+   
+    <>
+      Latitude: {location.latitude} <br />
+      Longitude: {location.longitude} <br />
+      Precisão em Metros: {location.accuracy}
+    </>
+
 
    );
  
